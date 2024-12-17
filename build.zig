@@ -1,7 +1,17 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-    const output_iso = b.option([]const u8, "mkisoName", "The output path to generate an ISO for. Default prefix is ./zig-out.");
+    const output_iso = b.option(
+        []const u8,
+        "iso",
+        "The output path to generate an ISO for. Default prefix is the zig install prefix, this may be changed using -Diso_prefix.",
+    );
+
+    const output_iso_prefix = b.option(
+        []const u8,
+        "iso_prefix",
+        "The prefix to install the generated ISO at. Defaults to the install prefix.",
+    ) orelse b.install_prefix;
 
     var target_query: std.Target.Query = .{
         .cpu_arch = .x86_64,
@@ -37,6 +47,7 @@ pub fn build(b: *std.Build) void {
         .omit_frame_pointer = false, // Used for stack traces if I wanted to implement them.
     });
 
+    // Disable nuisance/unsupported features for the kernel.
     kernel.root_module.red_zone = false;
     kernel.root_module.stack_check = false;
     kernel.root_module.stack_protector = false;
@@ -61,19 +72,20 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(kernel);
 
     if (output_iso) |iso_path|
-        makeISO(b.install_prefix, iso_path) catch unreachable;
+        makeISO(output_iso_prefix, iso_path) catch unreachable;
 
-    // TODO: Enable running with qemu and also some unit tests.
-    // const run_cmd = b.addRunArtifact(exe);
-    // run_cmd.step.dependOn(b.getInstallStep());
+    const run_step = b.step("run", "Runs the kernel in qemu.");
 
-    // if (b.args) |args| {
-    //     run_cmd.addArgs(args);
-    // }
+    run_step.* = std.Build.Step.init(.{
+        .name = "run",
+        .id = std.Build.Step.Id.run,
+        .owner = kernel.step.owner,
+        .makeFn = runInQemu,
+    });
 
-    // const run_step = b.step("run", "Run the app");
-    // run_step.dependOn(&run_cmd.step);
+    run_step.dependOn(b.getInstallStep());
 
+    // TODO: Add unit testing capabilities.
     // const exe_unit_tests = b.addTest(.{
     //     .root_source_file = b.path("src/main.zig"),
     //     .target = target,
@@ -84,6 +96,22 @@ pub fn build(b: *std.Build) void {
 
     // const test_step = b.step("test", "Run unit tests");
     // test_step.dependOn(&run_exe_unit_tests.step);
+}
+
+/// Runs the kernel in qemu.
+fn runInQemu(step: *std.Build.Step, _: std.Progress.Node) !void {
+    const b = step.owner;
+    const install_prefix = b.install_prefix;
+
+    try makeISO(install_prefix, ".runner");
+    const alloc = b.allocator;
+
+    const iso_path = try std.fs.path.join(
+        alloc,
+        &[_][]const u8{ install_prefix, ".runner.iso" },
+    );
+
+    try runProgram(alloc, &[_][]const u8{ "qemu-system-x86_64", "-cdrom", iso_path, "-display", "sdl" }, false);
 }
 
 /// Creates an ISO bootable image for the kernel. This requires git and xorriso (usually found in libisoburn).
