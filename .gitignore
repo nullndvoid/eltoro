@@ -1,0 +1,5 @@
+.vscode/
+.zig-cache/
+zig-out/
+vendor/
+build/
