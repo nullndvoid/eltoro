@@ -15,7 +15,7 @@ zig build
 zig build -Diso=output -Diso_prefix=/path/to/prefix
 ```
 
-The outputted ISO file is bootable and uses Limine to boot the kernel ELF file.
+The outputted ISO file is bootable and uses Limine to boot the kernel ELF file. Note that by default the `iso_prefix` is equal to Zig's, which is typically `zig-out/bin`.
 
 ## Running In Qemu
 
