@@ -67,6 +67,8 @@ pub fn build(b: *std.Build) void {
     const limine = b.dependency("limine", .{});
     kernel.root_module.addImport("limine", limine.module("limine"));
 
+    // Used to add SSFN support.
+    kernel.addIncludePath(.{ .cwd_relative = "dist/vendor" });
     kernel.setLinkerScript(b.path("linker.ld"));
 
     b.installArtifact(kernel);
