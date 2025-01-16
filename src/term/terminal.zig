@@ -42,12 +42,14 @@ pub fn initialise() void {
 }
 
 /// Writes on screen according to the specified format string, using the given foreground color.
-///
-/// Parameters:
-///   format: Format string in `std.fmt.format` format.
-///   args:   Tuple of arguments containing values for each format specifier.
-///   fg:     Color of the text.
-pub fn colorPrint(fg: RgbColour, comptime format: []const u8, args: anytype) void {
+pub fn colorPrint(
+    /// Color of the text.
+    fg: RgbColour,
+    /// Format string in `std.fmt.format` format.
+    comptime format: []const u8,
+    /// Tuple of arguments containing values for each format specifier.
+    args: anytype,
+) void {
     const saved_fg = current_fg;
 
     current_fg = fg;
@@ -62,11 +64,12 @@ pub fn clear(bg: RgbColour) void {
 }
 
 /// Writes on screen according to the specified format string.
-///
-/// Parameters:
-///   format: Format string in `std.fmt.format` format.
-///   args:   Tuple of arguments containing values for each format specifier.
-pub fn print(comptime format: []const u8, args: anytype) void {
+pub fn print(
+    /// Format string in `std.fmt.format` format.
+    comptime format: []const u8,
+    /// Tuple of arguments containing values for each format specifier.
+    args: anytype,
+) void {
     std.fmt.format(@as(TerminalWriter, undefined), format, args) catch unreachable;
 }
 
@@ -79,7 +82,13 @@ fn writeString(self: *Terminal, bytes: []const u8) void {
 /// The tab width in spaces.
 pub const TAB_WIDTH = 4;
 
-fn writeChar(self: *Terminal, c: u8) void {
+/// Simple. Writes a character to the screen with current foreground and background.
+fn writeChar(
+    /// A pointer to this terminal struct.
+    self: *Terminal,
+    /// The character to write to the 'Terminal'.
+    c: u8,
+) void {
     // TODO: Implement scrolling!
     if (self.cursor >= (self.screen_width * self.screen_height - 1)) {}
 
