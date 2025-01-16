@@ -101,7 +101,7 @@ pub fn build(b: *std.Build) void {
 }
 
 /// Runs the kernel in qemu.
-fn runInQemu(step: *std.Build.Step, _: std.Progress.Node) !void {
+fn runInQemu(step: *std.Build.Step, _: std.Build.Step.MakeOptions) !void {
     const b = step.owner;
     const install_prefix = b.install_prefix;
 

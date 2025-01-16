@@ -4,11 +4,11 @@ const std = @import("std");
 /// Abstractions over the framebuffer to create a more terminal-like interface.
 pub const Terminal = @This();
 
-const framebuffer = @import("framebuffer.zig");
+const frame_buffer = @import("framebuffer.zig");
 const font = @import("font.zig");
 
-const Framebuffer = framebuffer.Framebuffer;
-const RgbColour = framebuffer.RgbColour;
+const Framebuffer = frame_buffer.Framebuffer;
+const RgbColour = frame_buffer.RgbColour;
 
 /// The cursor position from char 0 to char w*h - 1.
 cursor: usize = 0,
