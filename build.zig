@@ -113,7 +113,19 @@ fn runInQemu(step: *std.Build.Step, _: std.Build.Step.MakeOptions) !void {
         &[_][]const u8{ install_prefix, ".runner.iso" },
     );
 
-    try runProgram(alloc, &[_][]const u8{ "qemu-system-x86_64", "-cdrom", iso_path, "-display", "sdl" }, false);
+    try runProgram(alloc, &[_][]const u8{
+        "qemu-system-x86_64",
+        "-cdrom",
+        iso_path,
+        "-display",
+        "sdl",
+        "-enable-kvm",
+        "-cpu",
+        "host",
+        // TODO: Make this tunable.
+        "-m",
+        "1G",
+    }, false);
 }
 
 /// Creates an ISO bootable image for the kernel. This requires git and xorriso (usually found in libisoburn).
