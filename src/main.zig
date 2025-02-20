@@ -10,10 +10,16 @@ pub export var base_revision: limine.BaseRevision linksection(".limine_requests"
     .revision = 3,
 };
 
+// physical address = logical_address - offset
+// TODO: Comprehend what on earth Limine is doing, get a pen and paper out.
+pub export var hhdm_request: limine.HhdmRequest linksection(".limine_requests") = .{};
 pub export var memmap_request: limine.MemoryMapRequest linksection(".limine_requests") = .{};
 
 export fn kmain() callconv(.C) noreturn {
-    if (!base_revision.is_supported() or memmap_request.response == null) {
+    if (!base_revision.is_supported() or
+        memmap_request.response == null or
+        hhdm_request.response == null)
+    {
         amd64.hang();
     }
 
@@ -36,4 +42,5 @@ fn readMemMap() void {
     }
 
     term.print("Got {d} bytes usable memory!\n", .{usable_memory});
+    term.print("{any}\n", .{hhdm_request.response.?});
 }
