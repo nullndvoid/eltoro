@@ -61,6 +61,7 @@ pub fn colorPrint(
 pub fn clear(bg: RgbColour) void {
     terminal.cursor = 0;
     terminal.framebuffer.clear(bg);
+    current_bg = bg;
 }
 
 /// Writes on screen according to the specified format string.

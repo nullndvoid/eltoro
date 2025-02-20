@@ -17,7 +17,8 @@ export fn kmain() callconv(.C) noreturn {
 
     // TODO: Support scalable screen font and use with Iosevka because it is lush.
     _ = term.Terminal.initialise();
-    term.clear(0x000000);
+    term.clear(0x082222);
+    term.print("Hello this is a test message!", .{});
 
     gdt.initialise();
     amd64.hang();
