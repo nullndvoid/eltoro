@@ -114,17 +114,14 @@ fn runInQemu(step: *std.Build.Step, _: std.Build.Step.MakeOptions) !void {
     );
 
     try runProgram(alloc, &[_][]const u8{
-        "qemu-system-x86_64",
-        "-cdrom",
-        iso_path,
-        "-display",
-        "sdl",
-        "-enable-kvm",
-        "-cpu",
-        "host",
+        // zig fmt: off
+        "qemu-system-x86_64", "-cdrom",
+        iso_path,             "-display",
+        "sdl",                "-enable-kvm",
+        "-cpu",               "host",
         // TODO: Make this tunable.
-        "-m",
-        "1G",
+        "-m", "1G",
+        // zig fmt: on
     }, false);
 }
 
