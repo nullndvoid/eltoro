@@ -113,14 +113,31 @@ fn runInQemu(step: *std.Build.Step, _: std.Build.Step.MakeOptions) !void {
         &[_][]const u8{ install_prefix, ".runner.iso" },
     );
 
+    // // TODO: Make image size configurable, possibly make this a different subcommand
+    // //       or something.
+    // try runProgram(
+    //     alloc,
+    //     &[_][]const u8{ "qemu-img", "create", iso_path, "256M" },
+    //     false,
+    // );
+
+    const driveArg = try std.fmt.allocPrint(
+        alloc,
+        "file={s},media=cdrom",
+        .{iso_path},
+    );
+
     try runProgram(alloc, &[_][]const u8{
         // zig fmt: off
-        "qemu-system-x86_64", "-cdrom",
-        iso_path,             "-display",
-        "sdl",                "-enable-kvm",
-        "-cpu",               "host",
+        "qemu-system-x86_64", 
+        "-drive",              driveArg,
+        "-display",            "sdl",
+        "-cpu",                "host",
+        "-machine",            "pc,accel=kvm",
         // TODO: Make this tunable.
-        "-m", "1G",
+        "-m",                  "1G",
+        "-enable-kvm",
+        "-boot",               "d",
         // zig fmt: on
     }, false);
 }
