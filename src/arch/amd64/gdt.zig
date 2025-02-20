@@ -13,7 +13,7 @@ const SegmentDescriptorFlags = packed struct(u4) {
     granularity_flag: bool,
 
     pub fn init(flags: u4) SegmentDescriptorFlags {
-        return flags;
+        return @bitCast(flags);
     }
 };
 
@@ -153,7 +153,7 @@ const SegmentDescriptorAccess = packed struct(u8) {
     present_bit: bool,
 
     pub fn init(byte: u8) SegmentDescriptorAccess {
-        return byte;
+        return @bitCast(byte);
     }
 };
 
@@ -178,7 +178,7 @@ const SystemSegmentDescriptorAccess = packed struct(u8) {
 
 /// Segment limits are in terms of 4KiB (page granularity). Reserved bits are ignored.
 /// To see the meanings of the below fields, write them out as binary and see which bits are set.
-var gdt = [_]u64{
+var gdt = [_]RawSegmentDescriptor{
     RawSegmentDescriptor.init(
         0,
         0,
@@ -247,7 +247,7 @@ pub fn initialise() void {
 fn loadGdt() void {
     amd64.lgdt(.{
         .size = @sizeOf(@TypeOf(gdt)) - 1,
-        .base = @intFromPtr(gdt[0]),
+        .base = @intFromPtr(&gdt[0]),
     });
 
     // Perform a far jump to reload the code segment.
@@ -266,7 +266,7 @@ fn loadGdt() void {
         \\     mov %ax, %gs
         \\     mov %ax, %ss
         :
-        : [kernel_code] "i" (SegmentSelector.kernel_code),
+        : [kernel_code] "i" (SegmentSelector.ks_code),
           [null_desc] "i" (SegmentSelector.null_desc),
         : "rax", "memory"
     );
