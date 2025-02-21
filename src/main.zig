@@ -11,6 +11,7 @@ pub export var base_revision: limine.BaseRevision linksection(".limine_requests"
 };
 
 // physical address = logical_address - offset
+// https://forum.osdev.org/viewtopic.php?t=56868
 // TODO: Comprehend what on earth Limine is doing, get a pen and paper out.
 pub export var hhdm_request: limine.HhdmRequest linksection(".limine_requests") = .{};
 pub export var memmap_request: limine.MemoryMapRequest linksection(".limine_requests") = .{};
