@@ -182,8 +182,8 @@ var gdt = [_]RawSegmentDescriptor{
     RawSegmentDescriptor.init(
         0,
         0,
-        SegmentDescriptorAccess.init(0),
-        SegmentDescriptorFlags.init(0),
+        @bitCast(SegmentDescriptorAccess.init(0)),
+        @bitCast(SegmentDescriptorFlags.init(0)),
     ),
     RawSegmentDescriptor.init(
         0xFFFFF,

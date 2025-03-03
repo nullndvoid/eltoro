@@ -1,3 +1,12 @@
+---
+tags: foo bar
+
+----
+
+
+
+
+
 # eltoro
 
 Hobby 'kernel' project in Zig. Uses the Limine bootloader because I like it.
